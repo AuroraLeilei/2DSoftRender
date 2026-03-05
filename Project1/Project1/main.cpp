@@ -78,7 +78,7 @@ public:
         // SDL2创建纹理（原生参数）
         framebuffer_texture = SDL_CreateTexture(
             sdl_renderer,
-            SDL_PIXELFORMAT_RGBA8888,
+            SDL_PIXELFORMAT_BGRA8888,
             SDL_TEXTUREACCESS_STREAMING,
             w, h
         );
@@ -117,9 +117,9 @@ public:
         framebuffer[y * screen_width + x] = color;
     }
 
-    // 绘制圆形光晕（中心→边缘渐变，适配圆形底板）
+    // 全局/类成员变量：SDL_Renderer* renderer（你之前创建的渲染器）
     void draw_circle(const Vec2& center, float radius, const Color& color, const Color& bg_color) {
-        // 遍历圆形外接正方形的所有像素（减少计算量）
+        // 1. 计算圆形的包围盒
         int x_start = static_cast<int>(center.x - radius);
         int x_end = static_cast<int>(center.x + radius);
         int y_start = static_cast<int>(center.y - radius);
@@ -127,26 +127,24 @@ public:
 
         for (int y = y_start; y < y_end; y++) {
             for (int x = x_start; x < x_end; x++) {
-                // 1. 计算当前像素到圆心的距离
+                // 2. 计算像素到圆心的距离
                 float dx = x - center.x;
                 float dy = y - center.y;
                 float distance = sqrt(dx * dx + dy * dy);
-
-                // 2. 超出半径的像素跳过（只画圆形区域）
                 if (distance > radius) continue;
 
-                // 3. 渐变强度：中心1.0，边缘0.0（平方衰减更柔和）
-                float t = distance / radius;
-                float intensity = 1.0f - t * t;
-                intensity = std::max(0.0f, std::min(1.0f, intensity));
+                // 3. 计算柔和渐变强度（保留你的核心效果）
+                float smooth_intensity = 1.0f - pow(distance / radius, 3);
+                smooth_intensity = std::max(0.0f, std::min(1.0f, smooth_intensity));
 
-                // 4. 混合颜色（和之前的逻辑一致，保证光晕效果）
-                uint8_t final_r = static_cast<uint8_t>(bg_color.r + (color.r - bg_color.r) * intensity);
-                uint8_t final_g = static_cast<uint8_t>(bg_color.g + (color.g - bg_color.g) * intensity);
-                uint8_t final_b = static_cast<uint8_t>(bg_color.b + (color.b - bg_color.b) * intensity);
-                uint8_t final_a = bg_color.a;
+                // 4. 计算最终颜色（渐变）
+                uint8_t r = static_cast<uint8_t>(color.r * smooth_intensity + bg_color.r * (1 - smooth_intensity));
+                uint8_t g = static_cast<uint8_t>(color.g * smooth_intensity + bg_color.g * (1 - smooth_intensity));
+                uint8_t b = static_cast<uint8_t>(color.b * smooth_intensity + bg_color.b * (1 - smooth_intensity));
 
-                set_pixel(x, y, Color(final_r, final_g, final_b, final_a));
+                // 5. SDL自带函数设置颜色+画点（绝对不会错）
+                SDL_SetRenderDrawColor(sdl_renderer, r, g, b, 255);
+                SDL_RenderDrawPoint(sdl_renderer, x, y);
             }
         }
     }
@@ -196,15 +194,15 @@ int main() {
             renderer.draw_circle(
                 Vec2(mouse_x, mouse_y),          // 圆心=鼠标位置
                 80 + breath1,                    // 基础半径80，加呼吸波动
-                Color(188, 172, 164, 0),
+                Color(255, 0, 0, 0),
                 bg_color
             );
 
-            // 2. 第二个圆形：浅蓝色 + 上下浮动 + 呼吸（位置固定，Y轴浮动）
+            // 2. 第二个圆形：浅粉色 + 上下浮动 + 呼吸（位置固定，Y轴浮动）
             renderer.draw_circle(
                 Vec2(400, 200 + sin(breath_offset * 0.01f) * 15), // Y轴浮动
                 70 + breath2,                                  // 基础半径70
-                Color(145, 162, 179, 0),
+                Color(0, 255, 0, 0),
                 bg_color
             );
 
@@ -212,7 +210,7 @@ int main() {
             renderer.draw_circle(
                 Vec2(250, 350),
                 60 + breath3,                    // 基础半径60
-                Color(152, 180, 162, 0),
+                Color(0, 0, 255, 0),
                 bg_color
             );
 
