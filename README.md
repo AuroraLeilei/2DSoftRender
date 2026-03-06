@@ -59,13 +59,12 @@ g++ main.cpp -o soft_renderer -lSDL2 -std=c++11
    - 第二个圆形：固定X坐标（400），Y坐标随正弦函数波动，半径变化（70±6）
    - 第三个圆形：固定位置（250,350），半径变化（60±7）
 3. 所有圆形均带有平滑的边缘过渡效果，颜色混合自然
-<video src="assets/RenderDisplay.mp4" controls width="100%">
-  你的浏览器不支持视频播放，请<a href="assets/RenderDisplay.mp4">下载视频</a>查看。
-</video>
 
-如果视频无法加载，可通过以下方式查看：
+![演示效果](assets/RenderGIF.gif)
+
+<!-- 如果视频无法加载，可通过以下方式查看：
 1. B 站直接播放：[RenderDisplay 演示视频](https://www.bilibili.com/video/BV11tPnzbErA?vd_source=12a19a94dceec0ef4b4c1ea67d211f90)
-2. 仓库文件直接下载/播放：[RenderDisplay.mp4](https://github.com/AuroraLeilei/2DSoftRender/raw/refs/heads/main/media/RenderDisplay.mp4)
+2. 仓库文件直接下载/播放：[RenderDisplay.mp4](https://github.com/AuroraLeilei/2DSoftRender/raw/refs/heads/main/media/RenderDisplay.mp4) -->
 
 ## 核心渲染逻辑
 `draw_circle` 方法的核心思路：
