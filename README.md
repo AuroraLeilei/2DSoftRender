@@ -59,7 +59,7 @@ g++ main.cpp -o soft_renderer -lSDL2 -std=c++11
    - 第二个圆形：固定X坐标（400），Y坐标随正弦函数波动，半径变化（70±6）
    - 第三个圆形：固定位置（250,350），半径变化（60±7）
 3. 所有圆形均带有平滑的边缘过渡效果，颜色混合自然
-<video src="https://github.com/AuroraLeilei/2DSoftRender/raw/refs/heads/main/media/RenderDisplay.mp4" width="800" controls autoplay loop muted></video>
+<video src="https://github.com/AuroraLeilei/2DSoftRender/raw/refs/heads/main/media/RenderDisplay.mp4" width="800" controls autoplay loop muted>你的浏览器不支持视频播放，请更新浏览器。</video>
 
 ## 核心渲染逻辑
 `draw_circle` 方法的核心思路：
